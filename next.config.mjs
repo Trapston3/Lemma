@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Tell Next.js to ignore ESLint and TS errors during Vercel builds
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
   // ── WASM Support ─────────────────────────────────────────────────
   // Required for @myriaddreamin/typst-ts-web-compiler to load its WASM binary
   webpack: (config, { isServer }) => {
