@@ -1,70 +1,73 @@
 # Lemma
 
-Lemma is a modern, local-first academic writing and diagramming environment that merges the rich-text editing experience of Notion with the rigorous typesetting power of LaTeX and Typst. Built entirely to run in the browser, it requires no backend servers, databases, or API keys to function—your data never leaves your device.
+A local-first academic writing and diagramming environment. It merges the rich-text feel of modern note-taking apps with the rigorous typesetting power of LaTeX and Typst. Built entirely to run in the browser, Lemma requires no backend servers, databases, or API keys—your data never leaves your device.
 
-![Lemma Editor Interface](./public/screenshot1.png)
-![Lemma Traditional Split-Pane](./public/screenshot2.png)
+**[Try the Live Demo!](https://lemma-editor.vercel.app)**
+
+![Lemma Editor Interface](./public/screenshots/hero-dark.png)
 
 ## Why I Built This
 
-I wanted an editor that felt fluid and beautiful to write in, but didn't compromise on producing publication-ready academic documents. LaTeX editors like Overleaf are incredibly powerful but visually archaic and require constant server round-trips to compile. Standard WYSIWYG editors look great but completely fail when you need to write complex equations, render vector diagrams, or output a perfectly formatted PDF.
+I wanted an editor that felt fluid to write in but didn't compromise on producing publication-ready academic documents. LaTeX editors like Overleaf are incredibly powerful, but they feel visually archaic and require constant server round-trips just to compile a PDF. On the flip side, standard WYSIWYG editors look great but completely fall apart when you need to write complex equations, manage citations, or render vector diagrams.
 
-Lemma bridges this gap by combining a custom Tiptap CRDT engine with a WebAssembly-powered Typst compiler.
+Lemma bridges that gap. It combines a custom Tiptap CRDT engine with a WebAssembly-powered Typst compiler to give you the best of both worlds.
 
-## Architectural Highlights
+## Features & Workflow
 
-This project was an exercise in pushing browser limits and escaping standard server-side rendering patterns.
+### 1. Local-First & Zero Latency
+There are no loading spinners here. Powered by `localforage` (IndexedDB) and Yjs CRDTs, everything saves instantly to your local hardware. You can write, draw, and compile PDFs entirely offline.
 
-###  Local-First Architecture
-The entire application runs entirely in the client. Powered by `localforage` (IndexedDB) and **Yjs CRDTs**, Lemma provides zero-latency, offline-capable editing. There are no spinners when you open a document or save a change—everything syncs instantly to your local hardware.
+![Lemma Dashboard](./public/screenshots/dashboard.png)
 
-###  In-Browser PDF Compilation
-Serverless functions (like Vercel's) often have strict 50MB limits, which breaks large binary compilers. Instead of relying on a backend, Lemma streams a **Typst WebAssembly (WASM) compiler** directly via CDN into the browser. It takes the Tiptap JSON Abstract Syntax Tree, translates it into Typst source code on the fly, and compiles it into a beautiful PDF locally in milliseconds.
+### 2. The "Overleaf" Split-Pane Mode
+Prefer writing raw code? Hit the command palette and toggle Traditional Mode. Write raw Markdown and Typst syntax on the left, and hit sync to instantly update the visual AST on the right. 
 
-###  Infinite Canvas Integration
-I integrated **Excalidraw** directly into the rich-text editor for seamless diagramming. Because Tiptap (ProseMirror) aggressively overtakes DOM events and styling, embedding a complex canvas inline usually results in broken toolbars and missing events. I solved this by mounting the active Excalidraw instance into an isolated **React Portal** modal, capturing the SVGs, and saving them back to the editor AST upon closure.
+![Split Pane View](./public/screenshots/split-pane.png)
 
-###  Git-Style Time Machine
-Instead of a standard undo/redo stack that gets lost when you refresh the page, Lemma implements an AST-based milestone snapshotting system. It saves immutable snapshots of your document over time, allowing you to browse past versions and restore them exactly as they were.
+### 3. Infinite Canvas Integration
+I integrated Excalidraw directly into the editor for seamless diagramming. Draw your system architectures or flowcharts, and they snap right into your document flow as clean SVGs.
 
-###  Material You Design
-The interface isn't just dark mode—it utilizes a dynamic, fluid **Material You** (M3) design system with custom CSS tokens. It features glassmorphic overlays, vibrant accent palettes, and responsive layouts that adapt beautifully to your screen size.
+![Excalidraw Integration](./public/screenshots/excalidraw.png)
 
-## Features at a Glance
+### 4. Native BibTeX Support
+Managing citations shouldn't require a third-party app. Lemma includes a built-in BibTeX library manager. Paste in your `.bib` references, and instantly search and inject citations directly into your text.
+Also has support for 16:9 aspect ratio!
 
-- **Rich Text & Slash Commands:** Type `/` to instantly insert headings, quotes, math blocks, and diagrams.
-- **KaTeX Math Engine:** Write LaTeX natively inline. Equations render beautifully in real-time.
-- **Split-Pane Sync:** Prefer the traditional Overleaf/Texworks experience? Open the raw code pane and write raw Markdown/Typst—then hit sync to instantly update the visual AST.
-- **Vim Mode:** Fully functional Vim keybindings for power users who hate touching the mouse.
-- **Instant Export:** Generate perfectly typeset PDFs without waiting for a server.
+![BibTeX Sidebar with support for 16:9 ratio](./public/screenshots/bibtex.png)
 
-## Getting Started
+### 5. Git-Style Time Machine
+Instead of a standard undo/redo stack that gets wiped out when you close the tab, Lemma takes immutable AST snapshots. Open the Time Machine to scrub back through your document's history and restore past versions.
 
-Because Lemma is local-first, there's no backend setup required.
+![Time Machine & Light Mode](./public/screenshots/time-machine.png)
+
+## Under the Hood
+
+Building this was an exercise in pushing browser limits and escaping standard server-side rendering patterns.
+
+* **In-Browser Compilation:** Serverless functions usually have strict payload limits that break large binary compilers. Instead of relying on a backend, Lemma streams a Typst WebAssembly (WASM) compiler directly via CDN. It translates the Tiptap JSON AST into Typst source code and compiles the PDF locally in milliseconds.
+* **React Portals for Canvas:** Because Tiptap (ProseMirror) aggressively manages DOM events, embedding a complex canvas inline usually breaks everything. I bypassed this by mounting the Excalidraw instance into an isolated React Portal modal, capturing the output, and saving it back to the editor state upon closure.
+* **KaTeX Injection:** Custom Tiptap nodes safely intercept and render KaTeX formulas, preventing the ProseMirror sanitizer from destroying the raw HTML output.
+
+## Tech Stack
+
+* **Framework:** Next.js (App Router) + React
+* **Editor:** Tiptap / ProseMirror + Yjs
+* **Compiler:** Typst WebAssembly (`@myriaddreamin/typst-ts-web-compiler`)
+* **Canvas:** Excalidraw
+* **Storage:** LocalForage (IndexedDB)
+* **Styling:** Tailwind CSS + Custom Material Design 3 Tokens
+
+## Running Locally
+
+Because Lemma is local-first, there's zero backend setup required.
 
 ```bash
 # Clone the repository
-git clone https://github.com/Trapston3/lemma.git
+git clone [https://github.com/Trapston3/lemma.git](https://github.com/Trapston3/lemma.git)
 cd lemma
 
-# Install dependencies (use legacy-peer-deps for Tiptap core resolutions)
+# Install dependencies (requires legacy-peer-deps for Tiptap core resolutions)
 npm install --legacy-peer-deps
 
 # Run the development server
 npm run dev
-```
-
-Open `http://localhost:3000` with your browser to see the result.
-
-## Tech Stack
-
-- **Framework:** Next.js (App Router) + React
-- **Editor:** Tiptap / ProseMirror + Yjs
-- **Compiler:** Typst WebAssembly (`@myriaddreamin/typst-ts-web-compiler`)
-- **Canvas:** Excalidraw
-- **Storage:** LocalForage (IndexedDB)
-- **Styling:** Tailwind CSS + Custom Material Design 3 Tokens
-- **Math:** KaTeX
-
----
-*Built with ❤️ to make academic writing suck less.*
