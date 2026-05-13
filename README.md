@@ -15,19 +15,19 @@ Lemma bridges this gap by combining a custom Tiptap CRDT engine with a WebAssemb
 
 This project was an exercise in pushing browser limits and escaping standard server-side rendering patterns.
 
-### 🌐 Local-First Architecture
+###  Local-First Architecture
 The entire application runs entirely in the client. Powered by `localforage` (IndexedDB) and **Yjs CRDTs**, Lemma provides zero-latency, offline-capable editing. There are no spinners when you open a document or save a change—everything syncs instantly to your local hardware.
 
-### ⚡ In-Browser PDF Compilation
+###  In-Browser PDF Compilation
 Serverless functions (like Vercel's) often have strict 50MB limits, which breaks large binary compilers. Instead of relying on a backend, Lemma streams a **Typst WebAssembly (WASM) compiler** directly via CDN into the browser. It takes the Tiptap JSON Abstract Syntax Tree, translates it into Typst source code on the fly, and compiles it into a beautiful PDF locally in milliseconds.
 
-### 🎨 Infinite Canvas Integration
+###  Infinite Canvas Integration
 I integrated **Excalidraw** directly into the rich-text editor for seamless diagramming. Because Tiptap (ProseMirror) aggressively overtakes DOM events and styling, embedding a complex canvas inline usually results in broken toolbars and missing events. I solved this by mounting the active Excalidraw instance into an isolated **React Portal** modal, capturing the SVGs, and saving them back to the editor AST upon closure.
 
-### 🕰️ Git-Style Time Machine
+###  Git-Style Time Machine
 Instead of a standard undo/redo stack that gets lost when you refresh the page, Lemma implements an AST-based milestone snapshotting system. It saves immutable snapshots of your document over time, allowing you to browse past versions and restore them exactly as they were.
 
-### 💅 Material You Design
+###  Material You Design
 The interface isn't just dark mode—it utilizes a dynamic, fluid **Material You** (M3) design system with custom CSS tokens. It features glassmorphic overlays, vibrant accent palettes, and responsive layouts that adapt beautifully to your screen size.
 
 ## Features at a Glance
